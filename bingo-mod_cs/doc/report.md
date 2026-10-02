@@ -40,7 +40,7 @@ La Fase 3 proporciona registro, envío y recepción. Los comandos que usan esos 
 
 ## Fase 4 — Comandos
 
-**Estado: en curso (Tasks 4.1–4.3 completadas; Task 4.4 pendiente; Task 4.5 reservada para el final).**
+**Estado: en curso (Tasks 4.1–4.3 completadas; Tasks 4.4 y 4.6–4.11 pendientes; Task 4.5 reservada para el final).**
 
 - `/bingo create` genera un tablero aleatorio independiente para cada jugador conectado y lo sincroniza solo con ese jugador.
 - Acepta `line`, `diagonal`, `matrix`, `random` y las banderas SDD `-L`, `-D`, `-M`, `-R`.
@@ -52,7 +52,8 @@ La Fase 3 proporciona registro, envío y recepción. Los comandos que usan esos 
 - `/star` inicia una ronda con los valores configurados (10 minutos, 5 rondas y modo `RANDOM` por defecto), resuelve `RANDOM` a una condición concreta para esa ronda y distribuye a los jugadores en radio de 32 bloques.
 - Si no se configuró `/bingo lobby`, `/star` guarda como lobby la posición y dimensión del jugador que lo ejecuta. La ronda requiere jugadores conectados y que todos tengan tablero.
 - El temporizador se sincroniza al HUD cada segundo; al llegar a cero se detiene la ronda y también el escaneo del inventario.
-- **4.4 — `/bingo finish`:** pendiente; deberá rechazar el cierre si no se inició ninguna ronda con `/star`.
+- **4.4 — `/bingo finish`:** pendiente; deberá rechazar el cierre si no se inició ninguna ronda con `/star` y, si hay una pausa activa, liberarla.
+- **4.6–4.11 — Pausa (`/pause`, `/resume`):** pendiente; definida en Spec 1.6 y Design 2.1 (punto 5). Cualquier jugador puede usarla, solo con una partida en curso.
 - **4.5 — `/bingo help` y `/help`:** se implementarán al final, cuando todos los comandos estén definidos, para que la guía esté completa.
 - `/bingo lobby` guarda la posición y dimensión actuales del jugador como lobby de la sesión; se limpia al iniciar un nuevo servidor.
 - **Verificación:** compilación completa y pruebas unitarias de valores por defecto y resolución del modo aleatorio pasan.
@@ -82,7 +83,8 @@ Los extras no forman parte del SDD y se implementan únicamente cuando correspon
 | `/bingo ranking reset` para limpiar el ranking en memoria | Fase 4 | Pendiente |
 | Mostrar en el HUD la ronda actual y el total de rondas | Fase 5 | Pendiente |
 | Botón para ampliar y centrar el HUD | Después de completar Fases 1–5 | Pendiente |
+| Cuenta regresiva de 3 s al reanudar con `/resume` | Después de Task 4.11 | Pendiente (por confirmar) |
 
 ## Decisión pendiente de proceso
 
-- El comando `/bingo pause` queda fuera del alcance actual y no se implementará mientras se define su comportamiento mediante un modelo Bizagi. No debe considerarse parte de los comandos planificados hasta revisar ese modelo.
+- La pausa de partida queda definida en Spec 1.6 y Design 2.1 (punto 5) como `/pause` y `/resume` (Tasks 4.6–4.11). Si se elabora el modelo Bizagi, debe alinearse con esa definición.
