@@ -29,4 +29,21 @@ Desarrollar un mod de minijuego de Bingo en Fabric (Minecraft 1.21.1, Java 21) p
 * `/bingo finish`: Cierra una partida iniciada con `/star` y calcula el ranking final; no funciona si no se inició una partida.
 * `/bingo time <minutos>`: Configura el límite de tiempo por ronda como entero de 5 a 60 minutos (predeterminado: 10).
 * `/bingo rounds <total>`: Configura el total de rondas como entero de 3 a 15 (predeterminado: 5).
+* `/pause`: Pausa la partida en curso para todos los jugadores (ver 1.6). Cualquier jugador puede usarlo, pero solo funciona si hay una ronda activa que no esté ya en pausa.
+* `/resume`: Reanuda una partida en pausa. Solo funciona si la partida está pausada.
 * `/help` (o `/bingo help`): Muestra el manual de comandos, sintaxis y reglas del minijuego. Se implementa al final, cuando todos los demás comandos estén definidos.
+
+## 1.6 Pausa de Partida
+* **Objetivo:** Detener la partida en curso sin perder el avance de las rondas, para resolver imprevistos sin recurrir a `/bingo finish` y reiniciar.
+* **Quién y cuándo:** Cualquier jugador puede ejecutar `/pause` y `/resume`; no requieren permisos especiales. `/pause` solo funciona con una ronda activa que no esté pausada y `/resume` solo con una partida pausada.
+* **Qué se detiene:**
+    * El temporizador de la ronda y su sincronización con el HUD. El tiempo en pausa no cuenta para el ranking.
+    * El escaneo de inventarios y, cuando exista, la detección de victoria.
+    * El mundo: mobs, ciclo día/noche, redstone, cultivos e ítems en el suelo.
+    * Los jugadores: no pueden moverse, romper ni colocar bloques, usar ítems, interactuar, atacar ni recibir daño, de modo que nadie obtiene ítems durante la pausa.
+* **Pantalla de pausa:** Todos los jugadores ven "Partida en pausa — Esperando a que reanude la partida…" con el temporizador congelado. La pantalla bloquea el input; ESC abre el menú del juego para poder desconectarse y la pantalla reaparece al cerrarlo mientras siga la pausa.
+* **Jugadores que entran durante la pausa:** Quedan congelados y ven la misma pantalla.
+* **Reanudar:** La ronda continúa desde el mismo tick en que se pausó.
+* **Cierre:** `/bingo finish` durante una pausa cierra la partida y libera el congelado.
+* **Persistencia:** El estado de pausa solo vive en memoria durante la sesión del servidor.
+* **Limitaciones conocidas:** Los efectos de poción y el hambre de los jugadores siguen su curso (los jugadores conservan su tick en vanilla) y no se cubren clientes modificados.
