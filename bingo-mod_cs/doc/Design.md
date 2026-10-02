@@ -44,3 +44,23 @@
 
 ### 4. Comando de Asistencia
 * `/help` / `/bingo help`: Envía mensajes formateados con componentes de texto nativos (`Text.literal(...)`) detallando las banderas (`-L`, `-D`, `-M`, `-R`), comandos administrativos y el funcionamiento del ranking por suma de tiempos.
+
+### 5. Pausa de Partida
+* **Estado (`BingoRoundManager`):**
+    * Bandera `paused`; `pauseRound` y `resumeRound` validan la transición (pausa solo con ronda activa y no pausada; reanudación solo si está pausada).
+    * Con `paused` activo, `tick` no descuenta ni sincroniza el temporizador y `BingoInventoryScanner` suspende el escaneo; ambos continúan al reanudar.
+* **`WorldFreezeController`:**
+    * Usa `server.getTickManager().setFrozen(...)` (mecanismo de `/tick freeze`), que detiene mobs, ciclo día/noche, redstone, cultivos e ítems en el suelo.
+    * Los jugadores conservan su tick en vanilla, por lo que se complementa con `PlayerFreezeController`.
+* **`PlayerFreezeController`:**
+    * Bloqueo de acciones con eventos de Fabric: `UseBlockCallback`, `UseItemCallback`, `UseEntityCallback`, `AttackBlockCallback`, `AttackEntityCallback` y `PlayerBlockBreakEvents.BEFORE` devuelven fallo durante la pausa; `ServerLivingEntityEvents.ALLOW_DAMAGE` cancela el daño a jugadores.
+    * Inmovilización: guarda la posición de cada jugador al pausar, desactiva su gravedad y, en `END_SERVER_TICK`, lo devuelve a esa posición si se desvió (`ServerPlayerEntity.teleport`). Cierra los menús abiertos en servidor.
+    * Ciclo de vida: `ServerPlayConnectionEvents.JOIN` congela a quien entra durante la pausa; `DISCONNECT` y `ServerLifecycleEvents.SERVER_STOPPING` restauran el estado antes de que Minecraft guarde al jugador. Como la gravedad desactivada se guarda con el jugador, se marca con una etiqueta de comando para corregirla al volver a entrar si el servidor cayó en pausa.
+* **Red:**
+    * `PauseS2CPayload(boolean paused)` registrado en `BingoNetworking`; se envía a todos al pausar y reanudar, y a quien entra durante la pausa.
+    * El cliente guarda el estado en `ClientBingoState`.
+* **Cliente (`BingoPauseScreen`):**
+    * Pantalla que no pausa el juego (`shouldPause()` falso); dibuja el mensaje y el temporizador congelado, y ESC abre `GameMenuScreen`.
+    * Un `ClientTickEvents.END_CLIENT_TICK` la vuelve a abrir mientras la partida siga pausada y no haya otra pantalla abierta; se cierra al reanudar o desconectarse.
+* **Comandos (`BingoCommands`):** `/pause` y `/resume` de nivel superior, como `/star`, sin restricción de permisos. Delegan en `BingoRoundManager` y avisan en el chat.
+* **Integración:** `/bingo finish` (Task 4.4) libera la pausa si existe; el flujo de victoria (Task 5.4) no evalúa durante la pausa.
